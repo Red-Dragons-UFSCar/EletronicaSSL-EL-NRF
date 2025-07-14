@@ -61,6 +61,10 @@ void Error_Handler(void);
 /* Private defines -----------------------------------------------------------*/
 #define tCE_Pin GPIO_PIN_11
 #define tCE_GPIO_Port GPIOB
+#define CSN_Pin GPIO_PIN_12
+#define CSN_GPIO_Port GPIOG
+#define CE_Pin GPIO_PIN_14
+#define CE_GPIO_Port GPIOG
 
 /* USER CODE BEGIN Private defines */
 

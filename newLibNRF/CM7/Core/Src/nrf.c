@@ -53,7 +53,7 @@ NRF_Status NRF24_SendCommand(NRF24 *nrf, uint8_t cmd) {
 
 	HAL_GPIO_WritePin(nrf->csPinBank, nrf->csPin, GPIO_PIN_RESET); //csn_reset()
 	ret = (NRF_Status) HAL_SPI_TransmitReceive(nrf->spiHandle, &cmd, &status, 1,
-			NRF_SPI_TIMEOUT); //Envia o comando e retorna o status ********************************************
+			NRF_SPI_TIMEOUT_TIME); //Envia o comando e retorna o status ********************************************
 	if (ret != NRF_OK) { //Verifica se o comando foi enviado corretamente
 		return ret;
 	}
@@ -209,9 +209,7 @@ NRF_Status NRF24_EnterMode(NRF24 *nrf, uint8_t mode) {
 	return ret;
 }
 
-NRF_Status NRF24_Init(NRF24 *nrf, SPI_HandleTypeDef *handle,
-		GPIO_TypeDef *PortCS, uint16_t PinCS, GPIO_TypeDef *PortCE,
-		uint16_t PinCE) {
+NRF_Status NRF24_Init(NRF24 *nrf){
 
 	CPU_Freq = HAL_RCC_GetSysClockFreq();
 	if (CPU_Freq == 0x00) {
@@ -342,16 +340,15 @@ NRF_Status NRF24_TransmitAndWait(NRF24 *nrf, uint8_t *payload, uint8_t length) {
 }
 
 void Tx_mode(NRF24 *nrf, uint8_t Adress[5]) {
-	if (NRF24_Init(nrf, nrf->spiHandle, nrf->csPin, nrf->csPinBank, nrf->cePin, nrf->cePinBank) != NRF_OK) {
+	/*if (NRF24_Init(nrf, nrf->spiHandle, nrf->csPin, nrf->csPinBank, nrf->cePin, nrf->cePinBank) != NRF_OK) {
 		Error_Handler();
-	}
+	}*/
 	NRF24_Reset(nrf);
 	NRF24_WriteRegister(nrf, NRF_REG_TX_ADDR, Adress, 5);
 }
 
 void Rx_mode(NRF24 *nrf, uint8_t Adress[5], uint8_t dataSize) {
-	if (NRF24_Init(nrf, nrf->spiHandle, nrf->csPin, nrf->csPinBank, nrf->cePin,
-			nrf->cePinBank) != NRF_OK) {
+	if (NRF24_Init(&nrf) != NRF_OK) {
 		Error_Handler();
 	}
 	NRF24_Reset(nrf);

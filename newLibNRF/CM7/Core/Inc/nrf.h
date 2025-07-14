@@ -183,9 +183,7 @@ void changeChannel(NRF24 *nrf, uint8_t n);
 
 
 //TX
-NRF_Status NRF24_Init(NRF24 *nrf, SPI_HandleTypeDef *handle,
-		GPIO_TypeDef *PortCS, uint16_t PinCS, GPIO_TypeDef *PortCE,
-		uint16_t PinCE);
+NRF_Status NRF24_Init(NRF24 *nrf);
 
 NRF_Status NRF24_EnterMode(NRF24 *nrf, uint8_t mode);
 
