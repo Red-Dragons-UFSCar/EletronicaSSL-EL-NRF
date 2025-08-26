@@ -319,4 +319,31 @@ NRF_Status ReceiveData(NRF24 *nrf, uint8_t *data, uint32_t len) {
 	return ret;
 }
 
+NRF_Status NRF24_SendReadCommand_DMA(NRF24 *nrf, uint8_t cmd, uint8_t *read,
+		uint8_t length) {
+	NRF_Status ret = NRF_OK;
+	uint8_t status;
+
+	HAL_GPIO_WritePin(nrf->csPinBank, nrf->csPin, GPIO_PIN_RESET);
+
+	ret = (NRF_Status) HAL_SPI_TransmitReceive_DMA(nrf->spiHandle, &cmd, &status, 1);
+	if(ret != NRF_OK){
+		HAL_GPIO_WritePin(nrf->csPinBank, nrf->csPin, GPIO_PIN_SET);
+		return ret;
+	}
+	ret = (NRF_Status) HAL_SPI_Receive_DMA(nrf->spiHandle, read, length);
+	HAL_GPIO_WritePin(nrf->csPinBank, nrf->csPin, GPIO_PIN_SET);
+	return ret;
+}
+
+NRF_Status NRF24_ReadPayload_DMA(NRF24 *nrf, uint8_t *read, uint8_t length) {
+	return NRF24_SendReadCommand_DMA(nrf, NRF_CMD_R_RX_PAYLOAD, read, length);
+}
+
+NRF_REG_STATUS ReceiveData_DMA (NRF24 *nrf, uint8_t *data, uint32_t len){
+	NRF_Status ret = NRF_ERROR;
+	ret = NRF24_ReadPayload(nrf, data, len);
+	return ret;
+}
+
 

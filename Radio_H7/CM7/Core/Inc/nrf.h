@@ -115,6 +115,7 @@ typedef struct
 	/* Modo */
 	NRF_Mode Mode;
 	/* DMA */
+	int Mensagem[5];
 
 } NRF24;
 
@@ -158,6 +159,14 @@ NRF_Status NRF24_Transmit(NRF24 *nrf, uint8_t *payload, uint8_t length);
 
 NRF_Status NRF24_ReadPayload(NRF24 *nrf, uint8_t *read, uint8_t length);
 
-NRF_Status ReceiveData(NRF24 *nrf, uint8_t *data, uint32_t len) ;
+NRF_Status ReceiveData(NRF24 *nrf, uint8_t *data, uint32_t len);
+
+/* DMA */
+
+NRF_Status NRF24_SendReadCommand_DMA(NRF24 *nrf, uint8_t cmd, uint8_t *read, uint8_t length);
+
+NRF_Status NRF24_ReadPayload_DMA(NRF24 *nrf, uint8_t *read, uint8_t length);
+
+NRF_REG_STATUS ReceiveData_DMA (NRF24 *nrf, uint8_t *data, uint32_t len);
 
 #endif /* INC_NRF_H_ */
