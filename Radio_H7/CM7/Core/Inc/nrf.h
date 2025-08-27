@@ -167,6 +167,13 @@ NRF_Status NRF24_SendReadCommand_DMA(NRF24 *nrf, uint8_t cmd, uint8_t *read, uin
 
 NRF_Status NRF24_ReadPayload_DMA(NRF24 *nrf, uint8_t *read, uint8_t length);
 
-NRF_REG_STATUS ReceiveData_DMA (NRF24 *nrf, uint8_t *data, uint32_t len);
+NRF_Status ReceiveData_DMA (NRF24 *nrf);
 
+NRF_Status NRF24_SetRegisterBit_DMA(NRF24 *nrf, uint8_t reg, uint8_t bit);
+
+NRF_Status NRF24_ReadRegister_DMA(NRF24 *nrf, uint8_t reg, uint8_t *read, uint8_t Length);
+
+NRF_Status NRF24_WriteRegister_DMA(NRF24 *nrf, uint8_t reg, uint8_t *write, uint8_t Length);
+
+NRF_Status NRF24_SendWriteCommand_DMA(NRF24 *nrf, uint8_t cmd, uint8_t *write, uint8_t length);
 #endif /* INC_NRF_H_ */

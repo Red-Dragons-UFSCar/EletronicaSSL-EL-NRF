@@ -159,12 +159,12 @@ Error_Handler();
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
 
-  	Set_NRF24(&Transmissor, &hspi1, CS_GPIO_Port, CS_Pin, CE_GPIO_Port, CE_Pin);
+  	Set_NRF24(&Transmissor, &hspi1, CS2_GPIO_Port, CS2_Pin, CE2_GPIO_Port, CE2_Pin);
     NRF24_Config(&Transmissor);
     Tx_mode(&Transmissor, Address);
     NRF24_WriteRegisterByte(&Transmissor, NRF_REG_RF_CH, 0x02);
 
-  	Set_NRF24(&Receptor, &hspi1, CS2_GPIO_Port, CS2_Pin, CE2_GPIO_Port, CE2_Pin);
+  	Set_NRF24(&Receptor, &hspi1, CS_GPIO_Port, CS_Pin, CE_GPIO_Port, CE_Pin);
     NRF24_Config(&Receptor);
     Rx_mode(&Receptor, Address, sizeof(rxData));
     NRF24_WriteRegisterByte(&Receptor, NRF_REG_RF_CH, 0x02);
@@ -199,14 +199,15 @@ Error_Handler();
 	  //} else {
 		  //HAL_GPIO_TogglePin(LED1_GPIO_PORT, LED1_PIN);
 	  //}
-	  HAL_Delay(50);
+	  //HAL_Delay(50);
 
-
+	  /*
 	  ret = ReceiveData(&Receptor, &rxData, sizeof(rxData));
 	  if(ret == NRF_OK){
 		  HAL_GPIO_TogglePin(LED1_GPIO_PORT, LED1_PIN);
 	  }
 	  HAL_GPIO_TogglePin(LED2_GPIO_PORT, LED2_PIN);
+	*/
 	  HAL_Delay(500);
 
     /* USER CODE END WHILE */
@@ -371,11 +372,11 @@ static void MX_GPIO_Init(void)
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(CS2_GPIO_Port, CS2_Pin, GPIO_PIN_SET);
 
-  /*Configure GPIO pin : PE8 */
-  GPIO_InitStruct.Pin = GPIO_PIN_8;
+  /*Configure GPIO pin : IRQ_Pin */
+  GPIO_InitStruct.Pin = IRQ_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
   GPIO_InitStruct.Pull = GPIO_PULLUP;
-  HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
+  HAL_GPIO_Init(IRQ_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pin : CE2_Pin */
   GPIO_InitStruct.Pin = CE2_Pin;
@@ -414,8 +415,8 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_Init(CS2_GPIO_Port, &GPIO_InitStruct);
 
   /* EXTI interrupt init*/
-  HAL_NVIC_SetPriority(EXTI9_5_IRQn, 0, 0);
-  HAL_NVIC_EnableIRQ(EXTI9_5_IRQn);
+  HAL_NVIC_SetPriority(IRQ_EXTI_IRQn, 1, 0);
+  HAL_NVIC_EnableIRQ(IRQ_EXTI_IRQn);
 
   /* USER CODE BEGIN MX_GPIO_Init_2 */
 
@@ -423,6 +424,15 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
+
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
+	if(GPIO_Pin == IRQ_Pin){
+		//HAL_Delay(5);
+		ReceiveData_DMA (&Receptor);
+		HAL_GPIO_TogglePin(LED1_GPIO_PORT, LED1_PIN);
+	}
+}
+
 
 /* USER CODE END 4 */
 

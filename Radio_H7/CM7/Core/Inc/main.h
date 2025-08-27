@@ -59,6 +59,9 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
+#define IRQ_Pin GPIO_PIN_8
+#define IRQ_GPIO_Port GPIOE
+#define IRQ_EXTI_IRQn EXTI9_5_IRQn
 #define CE2_Pin GPIO_PIN_10
 #define CE2_GPIO_Port GPIOE
 #define CS_Pin GPIO_PIN_12

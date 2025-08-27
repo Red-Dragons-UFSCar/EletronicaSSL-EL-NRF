@@ -340,10 +340,49 @@ NRF_Status NRF24_ReadPayload_DMA(NRF24 *nrf, uint8_t *read, uint8_t length) {
 	return NRF24_SendReadCommand_DMA(nrf, NRF_CMD_R_RX_PAYLOAD, read, length);
 }
 
-NRF_REG_STATUS ReceiveData_DMA (NRF24 *nrf, uint8_t *data, uint32_t len){
+NRF_Status ReceiveData_DMA (NRF24 *nrf){
 	NRF_Status ret = NRF_ERROR;
-	ret = NRF24_ReadPayload(nrf, data, len);
+	ret = NRF24_ReadPayload_DMA(nrf, nrf->Mensagem, sizeof(nrf->Mensagem));
+	NRF24_SetRegisterBit_DMA(nrf, NRF_REG_STATUS, 6);
 	return ret;
 }
 
+NRF_Status NRF24_SetRegisterBit_DMA(NRF24 *nrf, uint8_t reg, uint8_t bit){
+	NRF_Status ret = NRF_OK;
+	uint8_t cfg = 0x00;
 
+	ret = NRF24_ReadRegister_DMA(nrf, reg, &cfg, 1); //Pega a informação do byte do registro
+		if (ret != NRF_OK) {
+			return ret;
+		}
+
+		cfg = cfg & ~(1 << bit); //Altera o bit por meio de um E binário
+		return NRF24_WriteRegister_DMA(nrf, reg, &cfg, 1); //Escreve o registro de volta
+
+}
+
+NRF_Status NRF24_ReadRegister_DMA(NRF24 *nrf, uint8_t reg, uint8_t *read,
+		uint8_t Length) {
+	return NRF24_SendReadCommand_DMA(nrf, NRF_CMD_R_REGISTER | reg, read, Length);
+}
+
+NRF_Status NRF24_WriteRegister_DMA(NRF24 *nrf, uint8_t reg, uint8_t *write,
+		uint8_t Length) {
+	return NRF24_SendWriteCommand_DMA(nrf, NRF_CMD_W_REGISTER | reg, write, Length);
+}
+
+NRF_Status NRF24_SendWriteCommand_DMA(NRF24 *nrf, uint8_t cmd, uint8_t *write,
+		uint8_t length) {
+	NRF_Status ret = NRF_OK;
+	uint8_t status;
+
+	HAL_GPIO_WritePin(nrf->csPinBank, nrf->csPin, GPIO_PIN_RESET); //cs_reset
+	ret = (NRF_Status) HAL_SPI_TransmitReceive_DMA(nrf->spiHandle, &cmd, &status, 1);
+	if(ret != NRF_OK){
+		HAL_GPIO_WritePin(nrf->csPinBank, nrf->csPin, GPIO_PIN_SET);
+		return ret;
+	}
+	ret = (NRF_Status) HAL_SPI_Transmit_DMA(nrf->spiHandle, write, length);
+	HAL_GPIO_WritePin(nrf->csPinBank, nrf->csPin, GPIO_PIN_SET);
+	return ret;
+}
